@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DockerfileFrontendMCT
+    container_name: frontendMCT
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - redwebMCT
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerfileBackendMCT
+    container_name: backendMCT
+    command: bash -c "composer install && php -S 0.0.0.0:8000 -t public"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - redwebMCT
+
+  web:
+    build:
+      context: ./web
+      dockerfile: DockerfileWebMCT
+    container_name: webMCT
+    ports:
+      - "80:80"
+    networks:
+      - redwebMCT
+
+networks:
+  redwebMCT:
+    driver: bridge
